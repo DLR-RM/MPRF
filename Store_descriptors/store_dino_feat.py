@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import os
 from preprocess_img import preprocess_image
+import argparse
 
 def load_model(model_name="dinov2_vitb14_reg"):
     #model = torch.hub.load('facebookresearch/dinov2', model_name)
@@ -92,13 +93,38 @@ def compute_and_store_features(pickle_folder_path, model, feature_save_path):
 
 
 def main():
-    pickle_folder = "./Datasets/s3li-dataset/vulcano"  # Path to your pickle file
-    feature_save_path =  "./Datasets/Dinov2_descriptors/features_vulcano_pt_dino.pkl"
+    # -------------------------------
+    # Parse command-line arguments
+    # -------------------------------
+    parser = argparse.ArgumentParser(description="Compute and store features from pickled data.")
+    parser.add_argument("--pickle_folder", type=str, required=True,
+                        help="Path to the folder containing pickle files.")
+    parser.add_argument("--feature_save_path", type=str, required=True,
+                        help="Path to save computed feature file (e.g., .pkl).")
+    parser.add_argument("--model_type", type=str, choices=["pretrained", "finetuned"],
+                        default="pretrained",
+                        help="Choose which model to load: 'pretrained' uses load_model, 'finetuned' uses load_model_v2.")
+    parser.add_argument("--weights_path", type=str, default=None,
+                        help="Optional path to custom weights (only used if model_type=finetuned).")
 
-    #model = load_model_v2("dinov2_vitb14_reg", weights_path="./Weights/finetuned_dinov2_v3.pth")
-    model = load_model()
-    compute_and_store_features(pickle_folder, model, feature_save_path)
+    args = parser.parse_args()
+
+    # -------------------------------
+    # Load the appropriate model
+    # -------------------------------
+    if args.model_type == "finetuned":
+        if args.weights_path:
+            model = load_model_v2("dinov2_vitb14_reg", weights_path=args.weights_path)
+        else:
+            model = load_model_v2("dinov2_vitb14_reg")
+    else:
+        model = load_model()
+
+    # -------------------------------
+    # Compute and store features
+    # -------------------------------
+    compute_and_store_features(args.pickle_folder, model, args.feature_save_path)
+
 
 if __name__ == "__main__":
     main()
-

@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 from vpr_model import VPRModel
 from vpr_model_v2 import VPRModel as VPRModelv2
+import argparse
 
 def load_model(ckpt_path="./Weights/dino_salad.ckpt", dino_model= "dinov2_vitb14", dino_weights= "./Weights/finetuned_dinov2_v3.pth"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -124,14 +125,39 @@ def compute_and_store_features(device, pickle_folder_path, model, feature_save_p
 
 
 def main():
-    pickle_folder = "./Datasets/s3li-dataset/vulcano"  # Path to your pickle file
-    feature_save_path = "./Datasets/SALAD_descriptors/features_vulcano_new.pkl"
+    # -------------------------------
+    # Parse command-line arguments
+    # -------------------------------
+    parser = argparse.ArgumentParser(description="Compute and store features using the SALAD model.")
+    parser.add_argument("--pickle_folder", type=str, required=True,
+                        help="Path to the folder containing pickle files.")
+    parser.add_argument("--feature_save_path", type=str, required=True,
+                        help="Path to save the computed feature file (e.g., .pkl).")
+    parser.add_argument("--model_type", type=str, choices=["pretrained", "retrained"],
+                        default="pretrained",
+                        help="Select model version: 'pretrained' (default) or 'retrained'.")
+    parser.add_argument("--weights_path", type=str, default=None,
+                        help="Optional path to custom weights (used only for retrained model).")
 
-    #model = load_model_v2() #retrained salad
-    model = load_model()  # old salad
+    args = parser.parse_args()
+
+    # -------------------------------
+    # Load model
+    # -------------------------------
+    if args.model_type == "retrained":
+        if args.weights_path:
+            model = load_model_v2(args.weights_path)
+        else:
+            model = load_model_v2()
+    else:
+        model = load_model()
+
+    # -------------------------------
+    # Compute and store features
+    # -------------------------------
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    compute_and_store_features(device, pickle_folder, model, feature_save_path)
+    compute_and_store_features(device, args.pickle_folder, model, args.feature_save_path)
+
 
 if __name__ == "__main__":
     main()
-
