@@ -10,9 +10,9 @@ results_folder: "./Results/New_results/" #output path where results will be stor
 dataset_path: "./Datasets/s3li-dataset/"
 
 # Models
-dino_model: "dinov2_vitb14_reg"
+dino_model: "dinov2_vitb14"
 dino_weights: "./Weights/finetuned_dinov2_v3.pth"
-salad_model_version: "pt"   # options: "pt" (pretrained) or "rt" (retrained)
+salad_model_version: "pt"   # options: "pt" (pretrained) or "rt" (retrained) version of salad
 salad_weights: "./Weights/last.ckpt" #weights for retrained option
 
 # FLAGS
