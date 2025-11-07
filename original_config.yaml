@@ -1,0 +1,25 @@
+# config.yaml
+# Paths
+eval_pairs_path: "./Datasets/s3li-dataset/gt_dataset/eval_pairs0.6.pkl" #ground truth with valid matches
+#eval_pairs_path: "/home_local/enci_la/vulcano_eval_pairs0.6_v3.pkl"
+dino_features_file: "./Datasets/Dinov2_descriptors/features04.pkl" #features generated from store_dino_feat.py
+#dino_features_file: "./Datasets/Dinov2_descriptors/features_vulcano_new.pkl"
+salad_features_file: "./Datasets/SALAD_descriptors/features01.pkl" #features generated from store_salad_descriptors.py
+#salad_features_file: "./Datasets/SALAD_descriptors/features_vulcano_new.pkl"
+results_folder: "./Results/New_results/" #output path where results will be stored
+dataset_path: "./Datasets/s3li-dataset/"
+
+# Models
+dino_model: "dinov2_vitb14"
+dino_weights: "./Weights/finetuned_dinov2_v3.pth"
+salad_model_version: "pt"   # options: "pt" (pretrained) or "rt" (retrained) version of salad
+salad_weights: "./Weights/last.ckpt" #weights for retrained option
+
+# FLAGS
+run_pipeline: true      #boolean flag to run pipeline for all queries, if false it just performs evaluation for the stored results
+pose_estimation: false        # boolean flag to perform or not pose estimation
+visualize_matches: false      #visualize correspondences used for pose estimation
+
+#Thresholds
+similarity_threshold: 0.95      #threshold for 3d correspondences
+
