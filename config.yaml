@@ -1,19 +1,20 @@
 # config.yaml
 # Paths
-eval_pairs_path: "./Datasets/s3li-dataset/gt_dataset/eval_pairs0.6.pkl" #ground truth with valid matches
+eval_pairs_path: "./Datasets/s3li-dataset/gt_dataset/s3li_etna_pairs.pkl" #ground truth with valid matches
 #eval_pairs_path: "/home_local/enci_la/vulcano_eval_pairs0.6_v3.pkl"
-dino_features_file: "./Datasets/Dinov2_descriptors/features04.pkl" #features generated from store_dino_feat.py
+dino_features_file: "./Datasets/Dinov2_descriptors/etna_finetuned_dinov2_features.pkl" #features generated from store_dino_feat.py
 #dino_features_file: "./Datasets/Dinov2_descriptors/features_vulcano_new.pkl"
-salad_features_file: "./Datasets/SALAD_descriptors/features01.pkl" #features generated from store_salad_descriptors.py
+salad_features_file: "./Datasets/SALAD_descriptors/etna_pretrained_salad_features.pkl" #features generated from store_salad_descriptors.py
 #salad_features_file: "./Datasets/SALAD_descriptors/features_vulcano_new.pkl"
 results_folder: "./Results/New_results/" #output path where results will be stored
-dataset_path: "./Datasets/s3li-dataset/"
+dataset_path: "./Datasets/s3li-etna/"
+#dataset_path: "./Datasets/s3li-vulcano/"
 
 # Models
 dino_model: "dinov2_vitb14"
-dino_weights: "./Weights/finetuned_dinov2_v3.pth"
+dino_weights: "./Weights/finetuned_dinov2.pth"
 salad_model_version: "pt"   # options: "pt" (pretrained) or "rt" (retrained) version of salad
-salad_weights: "./Weights/last.ckpt" #weights for retrained option
+salad_weights: "./Weights/pretrained_salad.ckpt" #weights for retrained option
 
 # FLAGS
 run_pipeline: true      #boolean flag to run pipeline for all queries, if false it just performs evaluation for the stored results
