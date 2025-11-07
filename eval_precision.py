@@ -100,7 +100,7 @@ def main(config_path="config.yaml"):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         dino_model = load_dino_model(dino_model_name, weights_path=dino_weights).to(device)
         if config["salad_model_version"] == "pt":
-            salad_model = load_model()
+            salad_model = load_model(dino_model= dino_model_name, dino_weights = dino_weights)
         else:
             salad_weights = config["salad_weights"]
             salad_model= load_salad_model(ckpt_path=salad_weights, dino_model= dino_model_name, dino_weights = dino_weights)
