@@ -2,16 +2,16 @@ import numpy as np
 import torch
 import pickle
 import os
-from preprocess_img import preprocess_image
+from Retrieval.preprocess_img import preprocess_image
 import torch
 import torchvision.transforms as T
 import cv2
 import numpy as np
-from vpr_model import VPRModel
-from vpr_model_v2 import VPRModel as VPRModelv2
+from Models.salad.vpr_model import VPRModel
+from Models.salad.vpr_model_v2 import VPRModel as VPRModelv2
 import argparse
 
-def load_model(ckpt_path="./Weights/dino_salad.ckpt", dino_model= "dinov2_vitb14", dino_weights= "./Weights/finetuned_dinov2_v3.pth"):
+def load_model(ckpt_path="./Weights/pretrained_salad.ckpt", dino_model= "dinov2_vitb14", dino_weights= "./Weights/finetuned_dinov2_v3.pth"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = VPRModel(

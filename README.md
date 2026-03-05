@@ -82,22 +82,29 @@ dataset_path: "./Datasets/s3li-etna/"       # Path to the dataset
 # === Models ===
 dino_model: "dinov2_vitb14"
 dino_weights: "./Weights/finetuned_dinov2.pth"
-
 salad_model_version: "pt"                   # Options: "pt" (pretrained) or "rt" (retrained)
 salad_weights: "./Weights/pretrained_salad.ckpt"    # Required if using retrained model
 
-# === Flags ===
-run_pipeline: true          # Run full pipeline for all queries (if false, only evaluate stored results)
-pose_estimation: false      # Enable or disable pose estimation
-visualize_matches: false    # Visualize feature correspondences used for pose estimation
+# FLAGS
+run_pipeline: false            # boolean flag to run pipeline for all queries, if false it just performs evaluation for the stored results
+pose_estimation: false        # boolean flag to perform or not pose estimation
+visualize_matches: false      # visualize correspondences used for pose estimation
+compute_pr_curve: true 
 
-# === Thresholds ===
-similarity_threshold: 0.95  # Threshold for 3D correspondences
+#Thresholds
+similarity_threshold_retrieval: 0.00 #cosine distance between descriptors for retrieval (overridden when computing PR curve)
+similarity_threshold_retrieval_pr_range: [0.0, 0.995, 10]   # To span PR curve, and number of samples
+similarity_threshold_3d: 0.95                                # threshold for 3d correspondences
+time_threshold: 100     #minimum time difference between a candidate and the  query
+
+# Top-k params 
+k: 20
+k_refine: 20
 ```
 
 ## ▶️ 5. Run the Main Script
 ```bash
-source .env && python eval_precision.py --config config.yaml
+python eval_precision.py --config config.yaml
 ```
 
 This command runs the full pipeline:
@@ -106,15 +113,15 @@ This command runs the full pipeline:
 Processes all query images from the evaluation `.pkl` file and retrieves the most similar candidates.
 
 Generates two files per query (identified by the query’s timestamp):
-- `*_top20.pkl` → Top-20 most similar candidates (first retrieval stage)  
-- `*_top10.pkl` → Top-10 candidates (final retrieval stage)
+- `*_top{k}.pkl` → Top-k most similar candidates (first retrieval stage)  
+- `*_top{k_refine}.pkl` → Top-k_refine candidates (final retrieval stage)
 
 ### 🤖 Pose Estimation
 For each query, generates a `.csv` file containing one row per candidate.  
 Each row includes the estimated transformation and yaw angle between the query and its candidate image.
 
 ### 📊 Evaluation
-Computes and reports precision metrics at **Top-1**, **Top-5**, and **Top-10**.
+Computes and reports precision and recall metrics at **Top-1**, **Top-5**, **Top-10** and **Top-20**.
 
 ---
 

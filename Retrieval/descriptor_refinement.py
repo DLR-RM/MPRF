@@ -7,10 +7,10 @@ import os
 import cv2
 from pathlib import Path
 import time
-from FAISS_indexing import build_faiss_index, create_filtered_index, run_similarity_search
-from store_dino_feat import extract_features, load_features
-from preprocess_img import preprocess_image
-from image_retrieval import store_results
+from Indexing.FAISS_indexing import build_faiss_index, create_filtered_index, run_similarity_search
+from Store_descriptors.store_dino_feat import extract_features, load_features
+from Retrieval.preprocess_img import preprocess_image
+from Retrieval.image_retrieval import store_results
 
 def format_results(query_path, similarities, temp_idx, image_paths, timestamps, data):
     results = []
@@ -68,32 +68,31 @@ def extract_matching_features(features_dict, pickle_path):
     with open(pickle_path, "rb") as f:
         results = pickle.load(f)
 
+    if not features_dict:
+        print(f"Error! features_dict is empty!")
+
     matched_dict = {}
     for entry in results:
         matched_image = entry["matched_image"]
         matched_image_str = str(matched_image)  # ensure consistent key format
+
         if matched_image_str in features_dict:
             matched_dict[matched_image_str] = features_dict[matched_image_str]
         else:
             print(f"Warning: {matched_image_str} not found in features_dict")
     return matched_dict
 
-def refine_to_top10(query_image_path, model, device, results_folder, feature_save_path):
-    #feature_save_path = "./Datasets/Dinov2_descriptors/features04.pkl"
-    #feature_save_path = "./Datasets/Dinov2_descriptors/features_vulcano_new.pkl"
-
+def refine_to_top_k(query_image_path, model, device, results_folder, feature_save_path, k_orig=20, k_refine=10):
     query_filename = os.path.splitext(os.path.basename(query_image_path))[0].replace(".", "")
-
-    #results_folder = "./Results/New_results_2/"
-    candidates = results_folder+query_filename + "_retrieval_top20.pkl"
+    candidates = results_folder+query_filename + f"_retrieval_top{k_orig}.pkl"
 
     features_dict = load_features(feature_save_path)
     candidates_dict = extract_matching_features(features_dict, candidates)
 
-    index, image_paths, timestamps = build_faiss_index(candidates_dict)
+    if not candidates_dict:
+        return
 
-    #query_path_aux = "~" + query_image_path
-    #query_path_aux = os.path.expanduser(query_path_aux)
+    index, image_paths, timestamps = build_faiss_index(candidates_dict)
 
     image_start = time.time()
     query_features=descriptor(query_image_path, model, device)
@@ -103,9 +102,9 @@ def refine_to_top10(query_image_path, model, device, results_folder, feature_sav
         data = pickle.load(f)
 
     # Start timing per image
-    image_retrieval(query_image_path, query_features, index, data, image_paths, timestamps,
-                    results_file=results_folder+query_filename+"_refinement_top10.csv",
-                    pickle_file=results_folder+query_filename+"_refinement_top10.pkl")
+    image_retrieval(query_image_path, query_features, index, data, image_paths, timestamps, top_k=k_refine,
+                    results_file=results_folder+query_filename+f"_refinement_top{k_refine}.csv",
+                    pickle_file=results_folder+query_filename+f"_refinement_top{k_refine}.pkl")
     image_end = time.time()  # End timing per image
 
     time_taken_ms = (image_end - image_start) * 1000  # Convert to ms

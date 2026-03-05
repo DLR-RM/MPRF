@@ -32,9 +32,15 @@ def create_filtered_index(original_index, filtered_indices):
     print(f"Index filtering time: {(time.time() - start)*1000:.2f} ms")
     return temp_index, filtered_indices
 
-def run_similarity_search(index, query_vector, top_k):
+def run_similarity_search(index, query_vector, k):
     start = time.time()
     faiss.normalize_L2(query_vector)
+
+    # Allow to retrieve all samples
+    top_k = k
+    if k == -1:
+        top_k = index.ntotal
+
     D, I = index.search(query_vector, top_k)
     print(f"Similarity search time: {(time.time() - start)*1000:.2f} ms")
     return D, I

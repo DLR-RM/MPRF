@@ -12,6 +12,7 @@ def enhance_contrast(image):
 def preprocess_image(image_path, image_size=(224, 224)):
     """Convert grayscale to 3-channel, enhance contrast, and apply DINO preprocessing."""
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Load as grayscale
+    print("Processing image: ", image_path)
     if image is None:
         raise FileNotFoundError(f"Image not found: {image_path}")
 
