@@ -1,5 +1,13 @@
 # MPRF
-This repository contains the official code for the paper [MPRF](URL).
+This repository contains the official code for the paper [MPRF](https://arxiv.org/abs/2511.05404).
+```
+@article{gonzalez2026multi,
+  title={Multi-modal Loop Closure Detection with Foundation Models in Severely Unstructured Environments},
+  author={Gonzalez, Laura Alejandra Encinar and Folkesson, John and Triebel, Rudolph and Giubilato, Riccardo},
+  journal={2026 IEEE International Conference on Robotics and Automation (ICRA)},
+  year={2026}
+}
+```
 
 ### ✅ Tested Configuration
 - Python 3.10.18  
